@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% comment %} {% load static %} {% endcomment %}
+
+{% block title %} User Form {% endblock %}
+
+{% comment %} 
+<script>
+    document.getElementById("submitBtn").onclick = function() {
+      document.getElementById("user_table").style.display = "block";
+    };
+  </script> 
+{% endcomment %}
+
+
+{% block content %}
+<div class="container mt-4">
+
+  <h2>User Registration Form</h2>
+    {% block header %}{% endblock %}
+    
+{% comment %} <!-- Success & Error Messages --> {% endcomment %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class='mb-3'>
+  <!-- User Form -->
+  <form  id="userForm" action="" method="POST" class="needs-validation" class="form-control" novalidate>
+    {% csrf_token %}
+    
+    <!-- For Django Forms -->
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label"  for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+    </div>
+
+
+    <button type="submit"  class="btn {% if is_update %} btn-warning {% else %} btn-primary {% endif %}" id="submitBtn">
+    {% if is_update %} Update {% else %} Register {% endif %}</button>
+
+
+  </form>
+
+  <hr>
+ {% if valid_form != "ok" %}
+      <div id="tableDiv" style="display: none;">
+  {% else %}
+      <div id="tableDiv" style="display: block;">
+  {% endif %}
+
+  {% if data %}
+    <h2 style="display: none;">Saved Users</h2>
+    <table class="table table-bordered table-hover table-striped mt-3" id="user_table">
+      <thead class="table table-bordered">
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Password</th>
+          <th scope="col">Age</th>
+          <th scope ="col">Action</th>
+          {% comment %} <th scope ="col">Action</th> {% endcomment %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for rec in data %}
+        <tr>
+          <td>{{ rec.id }}</td>
+          <td>{{ rec.Name }}</td>
+          <td>{{ rec.Email }}</td>
+          <td>{{ rec.Password }}</td>
+          <td>{{ rec.Age }}</td>
+          <td>
+            <a href="{% url 'update' rec.id %}" id = 'editbtn' class="btn btn-warning btn-sm" ><i class="fa-solid fa-user-pen"></i></a>
+            <a href="{% url 'delete' rec.id %}"  class="btn btn-primary"  onclick="return confirm('Are you sure you want to delete ?');"><i class="fa-solid fa-trash"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No Records Available</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-warning mt-3">No data found!</div>
+  {% endif %}
+  </div>
+
+</div>
+{% endblock %}
